@@ -23,9 +23,9 @@ from anki.hooks import addHook, remHook, wrap
 from aqt import mw
 from aqt.addcards import AddCards
 from aqt.qt import *
-from aqt.utils import downArrow, shortcut, showInfo
+from aqt.utils import downArrow, shortcut
 
-from .context import APP_ICON, Config, config
+from .context import APP_ICON, config
 from .gui import show_about_dialog, show_options  # , check_updates
 from .lang import _
 from .query import query_from_browser, query_from_editor_fields
@@ -156,10 +156,10 @@ def customize_addcards():
             if isinstance(e, QMouseEvent):
                 if e.buttons() & Qt.MouseButton.LeftButton:
                     menu = QMenu(self)
-                    menu.addAction(
-                        _("ALL_FIELDS"),
-                        lambda: query_from_editor_fields(self.editor),
-                        QKeySequence(my_shortcut))
+                    all_fields_action = QAction(_("ALL_FIELDS"))
+                    all_fields_action.setShortcut(QKeySequence(my_shortcut))
+                    all_fields_action.triggered.connect(lambda: query_from_editor_fields(self.editor))
+                    menu.addAction(all_fields_action)
                     # default options
                     mid = self.editor.note.model()['id']
                     conf = config.get_maps(mid)
