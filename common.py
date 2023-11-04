@@ -144,7 +144,7 @@ def customize_addcards():
         add a button in add card window
         '''
         bb = self.form.buttonBox
-        ar = QDialogButtonBox.ActionRole
+        ar = QDialogButtonBox.ButtonRole.ActionRole
         # button
         fastwqBtn = QPushButton(_("QUERY") + u" " + downArrow())
         fastwqBtn.setShortcut(QKeySequence(my_shortcut))
@@ -154,7 +154,7 @@ def customize_addcards():
         # signal
         def onQuery(e):
             if isinstance(e, QMouseEvent):
-                if e.buttons() & Qt.LeftButton:
+                if e.buttons() & Qt.MouseButton.LeftButton:
                     menu = QMenu(self)
                     menu.addAction(
                         _("ALL_FIELDS"),
@@ -179,7 +179,7 @@ def customize_addcards():
                         menu.addSeparator()
                     # end default options
                     menu.addAction(_("OPTIONS"), lambda: show_options(self, self.editor.note.model()['id']))
-                    menu.exec_(
+                    menu.exec(
                         fastwqBtn.mapToGlobal(QPoint(0, fastwqBtn.height())))
             else:
                 query_from_editor_fields(self.editor)

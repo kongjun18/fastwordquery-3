@@ -22,7 +22,6 @@ import sys
 import anki
 import aqt
 import aqt.models
-import sip
 from anki.utils import isMac
 from aqt import mw
 from aqt.qt import *
@@ -58,7 +57,7 @@ class OptionsDialog(Dialog):
         # initlizing info
         self.main_layout = QVBoxLayout()
         self.loading_label = QLabel(_('INITLIZING_DICT'))
-        self.main_layout.addWidget(self.loading_label, 0, Qt.AlignCenter)
+        self.main_layout.addWidget(self.loading_label, 0, Qt.AlignmentFlag.AlignCenter)
         # self.loading_layout.addLayout(models_layout)
         self.setLayout(self.main_layout)
         # initlize properties
@@ -129,7 +128,7 @@ class OptionsDialog(Dialog):
         tab_corner = QWidget()
         tab_corner_layout = QHBoxLayout()
         tab_corner_layout.setSpacing(1)
-        tab_corner_layout.setSizeConstraint(QLayout.SetMinAndMaxSize)
+        tab_corner_layout.setSizeConstraint(QLayout.SizeConstraint.SetMinAndMaxSize)
         tab_corner_layout.setContentsMargins(0, 0, 0, 0)
         tab_corner.setLayout(tab_corner_layout)
         tab_add_button = QToolButton(self)
@@ -161,7 +160,7 @@ class OptionsDialog(Dialog):
             '<a href="{url}">User Guide</a>'.format(url=Endpoint.user_guide))
         home_label.setOpenExternalLinks(True)
         # buttons
-        btnbox = QDialogButtonBox(QDialogButtonBox.Ok, Qt.Horizontal, self)
+        btnbox = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok, Qt.Orientation.Horizontal, self)
         btnbox.accepted.connect(self.accept)
         bottom_layout.addWidget(paras_btn)
         # bottom_layout.addWidget(chk_update_btn)
@@ -184,7 +183,7 @@ class OptionsDialog(Dialog):
     def show_paras(self):
         '''open setting dialog'''
         dialog = SettingDialog(self, u'Setting')
-        dialog.exec_()
+        dialog.exec()
         dialog.destroy()
 
     # def check_updates(self):
@@ -336,7 +335,7 @@ class TabContent(QScrollArea):
         # dicts mapping
         dicts = QWidget(self)
         dicts.setLayout(QGridLayout())
-        self.setFrameShape(QFrame.NoFrame)
+        self.setFrameShape(QFrame.Shape.NoFrame)
         self.setWidgetResizable(True)
         self.setWidget(dicts)
         self.dicts_layout = dicts.layout()
@@ -364,7 +363,7 @@ class TabContent(QScrollArea):
             if s:
                 label = QLabel(_(s))
                 label.setFont(f)
-                label.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+                label.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
                 self.dicts_layout.addWidget(label, 0, i)
 
         # ignore all
@@ -434,7 +433,7 @@ class TabContent(QScrollArea):
 
         # check
         word_check_btn = QRadioButton(fld_name)
-        word_check_btn.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        word_check_btn.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         word_check_btn.setCheckable(True)
         word_check_btn.setChecked(word_checked)
         self.radio_group.addButton(word_check_btn)
@@ -443,8 +442,8 @@ class TabContent(QScrollArea):
         dict_combo.setMinimumSize(WIDGET_SIZE.map_dict_width, 0)
         dict_combo.setMaximumSize(WIDGET_SIZE.map_dict_width,
                                   WIDGET_SIZE.map_max_height)
-        dict_combo.setFocusPolicy(Qt.TabFocus | Qt.ClickFocus | Qt.StrongFocus
-                                  | Qt.WheelFocus)
+        dict_combo.setFocusPolicy(Qt.FocusPolicy.TabFocus | Qt.FocusPolicy.ClickFocus | Qt.FocusPolicy.StrongFocus
+                                  | Qt.FocusPolicy.WheelFocus)
         ignore = not self.fill_dict_combo_options(dict_combo, dict_unique,
                                                   self._services) or ignore
         dict_unique = dict_combo.itemData(dict_combo.currentIndex())
@@ -583,7 +582,7 @@ class TabContent(QScrollArea):
             text = dict_fld_name if dict_fld_name else 'http://'
             field_combo.setEditable(True)
             field_combo.setEditText(text)
-            field_combo.setFocus(Qt.MouseFocusReason)  # MouseFocusReason
+            field_combo.setFocus(Qt.FocusReason.MouseFocusReason)  # MouseFocusReason
         else:
             unique = dict_combo_itemdata
             service = service_pool.get(unique)
@@ -663,19 +662,19 @@ class CTabBar(QTabBar):
         self.setDrawBase(False)
         # edit
         self._editor = QLineEdit(self)
-        self._editor.setWindowFlags(Qt.Popup)
+        self._editor.setWindowFlags(Qt.WindowType.Popup)
         self._editor.setMaxLength(20)
         self._editor.editingFinished.connect(self.handleEditingFinished)
         self._editor.installEventFilter(self)
 
     def eventFilter(self, widget, event):
         bhide = False
-        if event.type() == QEvent.MouseButtonPress:
+        if event.type() == QEvent.Type.MouseButtonPress:
             if not self._editor.geometry().contains(event.globalPos()):
                 bhide = True
         if not bhide:
-            if event.type() == QEvent.KeyPress:
-                if event.key() == Qt.Key_Escape:
+            if event.type() == QEvent.Type.KeyPress:
+                if event.key() == Qt.Key.Key_Escape:
                     bhide = True
         if bhide:
             self.hideEditor()

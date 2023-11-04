@@ -46,7 +46,7 @@ class DictManageDialog(Dialog):
         self.main_layout = QVBoxLayout()
         self.setLayout(self.main_layout)
         self._options = list()
-        btnbox = QDialogButtonBox(QDialogButtonBox.Ok, Qt.Horizontal, self)
+        btnbox = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok, Qt.Orientation.Horizontal, self)
         btnbox.accepted.connect(self.accept)
         # add dicts mapping
         self.dicts_layout = QGridLayout()
@@ -64,7 +64,7 @@ class DictManageDialog(Dialog):
             if s:
                 label = QLabel(_(s))
                 label.setFont(f)
-                label.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+                label.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
                 self.dicts_layout.addWidget(label, 0, i)
         # enabled all
         self.enabled_all_check_btn = QCheckBox(_('DICTS_NAME'))
@@ -149,7 +149,7 @@ class DictManageDialog(Dialog):
         else:
             frm.text.setPlainText(unicode(open(path).read(), "utf8"))
         d.accepted.connect(lambda: self.on_accept_edit(path, frm))
-        d.exec_()
+        d.exec()
 
     def on_accept_edit(self, path, frm):
         '''save dictionary file'''
