@@ -1,2 +1,11 @@
-# fastwordquery-2
-A fork of [Fast Word Query](https://github.com/sth2018/FastWordQuery) with support for [DWDS](https://www.dwds.de) and [BAmooz](https://dic.b-amooz.com) dictionaries. DWDS is used to fetch the pronounciation and the definion of German words in German and BAmooz is used for Persian translation of german words. This addon helps creating Anki cards by automatically querying data from the dictionieris. 
+# Fast Word Query 3
+
+Upgrade "Fast Word Query 2"  Anki add-on to Anki 23.10. [User manual](https://ankiweb.net/shared/info/1807206748).
+
+All versions:
+
+1. Version 1: "Fast Word
+   Query", [Add-on page](https://ankiweb.net/shared/info/1807206748), [GitHub](https://github.com/sth2018/FastWordQuery)
+2. Version 2: "Fast Word Query
+   2", [Add-on page](https://ankiweb.net/shared/info/1501719123), [GitHub](https://github.com/aliahari/fastwordquery-2)
+3. Version 3: "Fast Word Query v3", [GitHub](https://github.com/Aleks-Ya/fastwordquery-3)
