@@ -110,9 +110,8 @@ def browser_menu():
                     for i, maps in enumerate(maps_list):
                         submenu.addAction(
                             _OK_ICON if i == conf['def'] else _NULL_ICON,
-                            _('CONFIG_INDEX') % (i + 1) if isinstance(
-                                maps, list) else maps['name'],
-                            lambda mid=m['id'], i=i: set_options_def(mid, i))
+                            _('CONFIG_INDEX') % (i + 1) if isinstance(maps, list) else maps['name'],
+                            lambda mid1=m['id'], i1=i: set_options_def(mid1, i1))
                     b = True
             if b:
                 menu.addSeparator()
@@ -173,9 +172,8 @@ def customize_addcards():
                         for i, maps in enumerate(maps_list):
                             menu.addAction(
                                 _OK_ICON if i == conf['def'] else _NULL_ICON,
-                                _('CONFIG_INDEX') % (i + 1) if isinstance(
-                                    maps, list) else maps['name'],
-                                lambda mid=mid, i=i: set_options_def(mid, i))
+                                _('CONFIG_INDEX') % (i + 1) if isinstance(maps, list) else maps['name'],
+                                lambda mid1=mid, i1=i: set_options_def(mid1, i1))
                         menu.addSeparator()
                     # end default options
                     menu.addAction(_("OPTIONS"), lambda: show_options(self, self.editor.note.model()['id']))
