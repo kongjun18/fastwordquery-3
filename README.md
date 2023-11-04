@@ -8,4 +8,4 @@ All versions:
    Query", [Add-on page](https://ankiweb.net/shared/info/1807206748), [GitHub](https://github.com/sth2018/FastWordQuery)
 2. Version 2: "Fast Word Query
    2", [Add-on page](https://ankiweb.net/shared/info/1501719123), [GitHub](https://github.com/aliahari/fastwordquery-2)
-3. Version 3: "Fast Word Query v3", [GitHub](https://github.com/Aleks-Ya/fastwordquery-3)
+3. Version 3: "Fast Word Query v3", [Add-on page](https://ankiweb.net/shared/info/1956435337), [GitHub](https://github.com/Aleks-Ya/fastwordquery-3)
