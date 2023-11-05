@@ -1,4 +1,4 @@
-#-*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
 #
 # Copyright (C) 2018 sthoo <sth201807@gmail.com>
 #
@@ -17,25 +17,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from collections import defaultdict
-import os
-import shutil
-import unicodedata
+from aqt.utils import tooltip
 
-from aqt import mw
-from aqt.utils import showInfo, showText, tooltip
-
+from .common import inspect_note
+from .common import promot_choose_css
 from .worker import QueryWorkerManager
-from .common import promot_choose_css, inspect_note
-
-from ..constants import Endpoint, Template
-from ..context import config
 from ..lang import _
-from ..gui import ProgressWindow
-from ..service import service_manager, service_pool, QueryResult, copy_static_file
-from ..service.base import LocalService
-from ..utils import Empty, MapDict, Queue, wrap_css
-
+from ..service import service_pool
 
 __all__ = ['query_from_browser', 'query_from_editor_fields']
 
@@ -60,7 +48,7 @@ def query_from_browser(browser):
 
 def query_from_editor_fields(editor, fields=None):
     """
-    Query word fileds from Editor
+    Query word fields from Editor
     """
 
     if not editor or not editor.note:
@@ -80,7 +68,7 @@ def query_from_editor_fields(editor, fields=None):
         tooltip(_('PLS_SET_DICTIONARY_FIELDS'))
         show_options(
             editor.parentWindow,
-            editor.note.model()['id'],
+            editor.note.note_type()['id'],
             query_from_editor_fields,
             editor,
             fields
@@ -89,7 +77,7 @@ def query_from_editor_fields(editor, fields=None):
         editor.setNote(editor.note)
         query_all([editor.note], flush, fields)
         editor.setNote(editor.note, focusTo=0)
-        editor.saveNow(lambda:None)
+        editor.saveNow(lambda: None)
 
 
 def query_all(notes, flush=True, fields=None):
@@ -101,8 +89,8 @@ def query_all(notes, flush=True, fields=None):
         return
 
     work_manager = QueryWorkerManager()
-    #work_manager.reset()
-    #progress.start(max=len(notes), min=0, immediate=True)
+    # work_manager.reset()
+    # progress.start(max=len(notes), min=0, immediate=True)
     work_manager.flush = flush
     work_manager.query_fields = fields
     queue = work_manager.queue
@@ -113,9 +101,9 @@ def query_all(notes, flush=True, fields=None):
     work_manager.start()
     work_manager.join()
 
-    #progress.finish()
+    # progress.finish()
     promot_choose_css(work_manager.missed_css)
     tooltip(u'{0} {1} {2}, {3} {4}'.format(_('UPDATED'), work_manager.counter, _(
         'CARDS'), work_manager.fields, _('FIELDS')))
-    #work_manager.clean()
+    # work_manager.clean()
     service_pool.clean()

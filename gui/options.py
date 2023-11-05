@@ -17,32 +17,33 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import sys
-
 import anki
 import aqt
 import aqt.models
-from anki.utils import isMac
 from aqt import mw
 from aqt.qt import *
 from aqt.studydeck import StudyDeck
 
+from .base import Dialog
+from .base import WIDGET_SIZE
+from .setting import SettingDialog
 from ..constants import Endpoint
 from ..context import config
-from ..lang import _, _sl
-from ..service import service_manager, service_pool
-from ..utils import get_icon, get_model_byId
-from .base import WIDGET_SIZE, Dialog
-from .setting import SettingDialog
+from ..lang import _
+from ..lang import _sl
+from ..service import service_manager
+from ..service import service_pool
+from ..utils import get_icon
+from ..utils import get_model_byId
 
 __all__ = ['OptionsDialog']
 
 
 class OptionsDialog(Dialog):
-    '''
+    """
     query options window
     setting query dictionary and fileds
-    '''
+    """
 
     __slot__ = ['begore_build', 'after_build']
     _signal = pyqtSignal(str)
@@ -134,7 +135,7 @@ class OptionsDialog(Dialog):
         tab_add_button = QToolButton(self)
         tab_add_button.setIcon(get_icon('add.png'))
         tab_set_button = QToolButton(self)
-        if isMac and sys.hexversion < 0x03000000:
+        if is_mac and sys.hexversion < 0x03000000:
             tab_set_button.setMaximumSize(20, 20)
             tab_add_button.setMaximumSize(20, 20)
         tab_set_button.setIcon(get_icon('setting.png'))
@@ -181,7 +182,7 @@ class OptionsDialog(Dialog):
             self.build_tabs_layout()
 
     def show_paras(self):
-        '''open setting dialog'''
+        """open setting dialog"""
         dialog = SettingDialog(self, u'Setting')
         dialog.exec()
         dialog.destroy()
@@ -192,36 +193,34 @@ class OptionsDialog(Dialog):
     #     check_updates(parent=self)
 
     def show_fm_dialog(self):
-        '''open folder manager dialog'''
+        """open folder manager dialog"""
         self.accept()
         self.setResult(1001)
 
     def show_dm_dialog(self):
-        '''open dictionary manager dialog'''
+        """open dictionary manager dialog"""
         self.accept()
         self.setResult(1002)
 
     def show_about(self):
-        '''open about dialog'''
+        """open about dialog"""
         from .common import show_about_dialog
         show_about_dialog(self)
 
     def accept(self):
-        '''on button was clicked'''
+        """on button was clicked"""
         self.save()
         super(OptionsDialog, self).accept()
 
     def btn_models_pressed(self):
-        '''on choose model button was clicker'''
+        """on choose model button was clicker"""
         self.save()
         self.current_model = self.show_models()
         if self.current_model:
             self.build_tabs_layout()
 
     def build_tabs_layout(self):
-        '''
-        build dictionary、fields etc
-        '''
+        """build dictionary、fields etc"""
         try:
             self.tab_widget.currentChanged.disconnect()
         except Exception:
@@ -272,7 +271,7 @@ class OptionsDialog(Dialog):
         #    self.tab_widget.setTabText(k, _('CONFIG_INDEX') % (k+1))
 
     def changedTab(self, i):
-        if not isMac or sys.hexversion >= 0x03000000:
+        if not is_mac or sys.hexversion >= 0x03000000:
             # restore
             for k in range(0, len(self.tabs)):
                 self.tab_widget.setTabIcon(k, self._NULL_ICON)
@@ -281,9 +280,7 @@ class OptionsDialog(Dialog):
         self.tabs[i].build_layout()
 
     def show_models(self):
-        '''
-        show choose note type window
-        '''
+        """show choose note type window"""
         edit = QPushButton(
             anki.lang._("Manage"), clicked=lambda: aqt.models.Models(mw, self))
         ret = StudyDeck(
@@ -303,7 +300,7 @@ class OptionsDialog(Dialog):
             return model
 
     def save(self):
-        '''save config to file'''
+        """save config to file"""
         if not self.current_model:
             return
         data = dict()
@@ -322,7 +319,7 @@ class OptionsDialog(Dialog):
 
 
 class TabContent(QScrollArea):
-    '''Options tab content'''
+    """Options tab content"""
 
     def __init__(self, model, conf, services):
         super(TabContent, self).__init__()
@@ -342,9 +339,7 @@ class TabContent(QScrollArea):
         # self.dicts_layout.setSizeConstraint(QLayout.SetFixedSize)
 
     def build_layout(self):
-        '''
-        build dictionary、fields etc
-        '''
+        """build dictionary、fields etc"""
         if self._was_built:
             return
 
@@ -408,9 +403,7 @@ class TabContent(QScrollArea):
         self.skip_all_update()
 
     def add_dict_layout(self, i, **kwargs):
-        """
-        add dictionary fields row
-        """
+        """add dictionary fields row"""
         word_checked = kwargs.get('word_checked', False)
 
         fld_name, fld_ord = (
@@ -514,7 +507,7 @@ class TabContent(QScrollArea):
 
         # dict
         def dict_combo_changed(index):
-            '''dict combo box index changed'''
+            """dict combo box index changed"""
             self.fill_field_combo_options(
                 field_combo, dict_combo.currentText(),
                 dict_combo.itemData(index), field_combo.currentText(),
@@ -543,7 +536,7 @@ class TabContent(QScrollArea):
         })
 
     def fill_dict_combo_options(self, dict_combo, current_unique, services):
-        '''setup dict combo box'''
+        """setup dict combo box"""
         dict_combo.clear()
 
         # local dict service
@@ -572,7 +565,7 @@ class TabContent(QScrollArea):
     def fill_field_combo_options(self, field_combo, dict_combo_text,
                                  dict_combo_itemdata, dict_fld_name,
                                  dict_fld_ord):
-        '''setup field combobox'''
+        """setup field combobox"""
         field_combo.clear()
         field_combo.setEditable(False)
         # if dict_combo_text in _sl('NOT_DICT_FIELD'):

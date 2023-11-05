@@ -17,9 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import sys
-
-from anki.utils import isMac
 from aqt.qt import *
 
 from ..context import APP_ICON
@@ -28,15 +25,13 @@ __all__ = ['Dialog', 'WIDGET_SIZE']
 
 
 class Dialog(QDialog):
-    '''
-    Base used for all dialog windows.
-    '''
+    """Base used for all dialog windows."""
 
     def __init__(self, parent, title):
-        '''
+        """
         Set the modal status for the dialog, sets its layout to the
         return value of the _ui() method, and sets a default title.
-        '''
+        """
 
         self._title = title if "FastWQ" in title else "FastWQ - " + title
         self._parent = parent
@@ -48,16 +43,14 @@ class Dialog(QDialog):
         self.setWindowIcon(APP_ICON)
         self.setWindowTitle(self._title)
         # 2 & 3 & mac compatible
-        if isMac and sys.hexversion >= 0x03000000:
+        if is_mac and sys.hexversion >= 0x03000000:
             QApplication.setStyle('Fusion')
 
 
 class WidgetSize(object):
-    '''
-    constant values
-    '''
+    """constant values """
     dialog_width = 850
-    dialog_height_margin = 166 if isMac and sys.hexversion < 0x03000000 else 146
+    dialog_height_margin = 166 if is_mac and sys.hexversion < 0x03000000 else 146
     map_min_height = 0
     map_max_height = 30
     map_fld_width = 100

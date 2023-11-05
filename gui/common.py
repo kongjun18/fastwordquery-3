@@ -34,7 +34,7 @@ __all__ = ['show_options', 'show_fm_dialog', 'show_about_dialog']
 
 
 def show_fm_dialog(browser=None):
-    '''open dictionary folder manager window'''
+    """open dictionary folder manager window"""
     parent = mw if browser is None else browser
     fm_dialog = FoldersManageDialog(parent, u'Dictionary Folder Manager')
     fm_dialog.activateWindow()
@@ -63,7 +63,7 @@ def show_dm_dialog(browser=None):
 
 
 def show_options(browser=None, model_id=-1, callback=None, *args, **kwargs):
-    '''open options window'''
+    """open options window"""
     parent = mw if browser is None else browser
     config.read()
     opt_dialog = OptionsDialog(parent, u'Options', model_id)
@@ -81,5 +81,5 @@ def show_options(browser=None, model_id=-1, callback=None, *args, **kwargs):
 
 
 def show_about_dialog(parent):
-    '''open about dialog'''
+    """open about dialog"""
     QMessageBox.about(parent, _('ABOUT'), Template.tmpl_about)
