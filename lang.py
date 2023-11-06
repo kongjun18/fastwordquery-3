@@ -76,7 +76,7 @@ _arr = [
     ['SKIPED', u'略过', 'Skipped'],
     ['SETTINGS', u'参数', u'Settings'],
     ['THREAD_NUMBER', u'线程数', u'Number of Threads'],
-    ['INITLIZING_DICT', u'初始化词典...', u'Initlizing Dictionary...'],
+    ['INITIALIZING_DICT', u'初始化词典...', u'Initlizing Dictionary...'],
     [
         'PLS_SET_DICTIONARY_FIELDS', u'请设置字典和字段',
         u'Please set the dictionary and fields.'

@@ -42,10 +42,10 @@ __all__ = ['OptionsDialog']
 class OptionsDialog(Dialog):
     """
     query options window
-    setting query dictionary and fileds
+    setting query dictionary and fields
     """
 
-    __slot__ = ['begore_build', 'after_build']
+    __slot__ = ['before_build', 'after_build']
     _signal = pyqtSignal(str)
 
     _NULL_ICON = get_icon('null.png')
@@ -55,13 +55,13 @@ class OptionsDialog(Dialog):
         super(OptionsDialog, self).__init__(parent, title)
         self._signal.connect(self._before_build)
         self._signal.connect(self._after_build)
-        # initlizing info
+        # initializing info
         self.main_layout = QVBoxLayout()
-        self.loading_label = QLabel(_('INITLIZING_DICT'))
+        self.loading_label = QLabel(_('INITIALIZING_DICT'))
         self.main_layout.addWidget(self.loading_label, 0, Qt.AlignmentFlag.AlignCenter)
         # self.loading_layout.addLayout(models_layout)
         self.setLayout(self.main_layout)
-        # initlize properties
+        # initialize properties
         self.model_id = model_id if model_id != -1 else config.last_model_id
         self.current_model = None
         self.tabs = []
@@ -247,7 +247,7 @@ class OptionsDialog(Dialog):
             WIDGET_SIZE.map_max_height + WIDGET_SIZE.dialog_height_margin)
         self.save()
 
-    def addTab(self, maps=None, forcus=True):
+    def addTab(self, maps=None, focus=True):
         i = len(self.tabs)
         if isinstance(maps, list):
             maps = {'fields': maps, 'name': _('CONFIG_INDEX') % (i + 1)}
@@ -256,12 +256,12 @@ class OptionsDialog(Dialog):
         self.tabs.append(tab)
         self.tab_widget.addTab(
             tab, maps['name'] if maps else _('CONFIG_INDEX') % (i + 1))
-        if forcus:
+        if focus:
             self.tab_widget.setCurrentIndex(i)
 
-    def removeTab(self, i, forcus=False):
+    def removeTab(self, i, focus=False):
         # less than one config
-        if not forcus and len(self.tabs) <= 1:
+        if not focus and len(self.tabs) <= 1:
             return
         tab = self.tabs[i]
         del self.tabs[i]
