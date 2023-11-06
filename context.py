@@ -18,6 +18,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import json
+import logging
 import os
 
 from anki.hooks import runHook
@@ -35,10 +36,10 @@ class Config(object):
     """
     Addon Config
     """
-
     _CONFIG_FILENAME = 'fastwqcfg.json'  # Config File Path
 
     def __init__(self, window):
+        self.log = logging.getLogger(__class__.__name__)
         self.path = u'_' + self._CONFIG_FILENAME
         self.window = window
         self.version = '0'
@@ -57,9 +58,11 @@ class Config(object):
         data['%s_last' % self.pmname] = data.get('last_model',
                                                  self.last_model_id)
         self.data.update(data)
-        with open(self.path, 'w', encoding='utf-8') as f:
-            json.dump(
-                self.data, f, indent=4, sort_keys=True, ensure_ascii=False)
+        full_path: str = os.path.join(os.getcwd(), self.path)
+        self.log.debug(f"Update file: {full_path}")
+        self.log.debug(f"Update data: {self.data}")
+        with open(full_path, 'w', encoding='utf-8') as f:
+            json.dump(self.data, f, indent=4, sort_keys=True, ensure_ascii=False)
             f.close()
         runHook('config.update')
 
@@ -70,15 +73,16 @@ class Config(object):
         if self.data:
             return self.data
         try:
-            path = self.path if os.path.exists(
-                self.path) else u'.' + self._CONFIG_FILENAME
-            with open(path, 'r', encoding="utf-8") as f:
+            path = self.path if os.path.exists(self.path) else u'.' + self._CONFIG_FILENAME
+            full_path: str = os.path.join(os.getcwd(), path)
+            self.log.debug(f"Reading file: {full_path}")
+            with open(full_path, 'r', encoding="utf-8") as f:
                 self.data = json.load(f)
                 f.close()
             if not os.path.exists(self.path):
                 self.update(self.data)
-        except Exception as e:
-            print('can not find config file', e)
+        except Exception:
+            self.log.exception('can not find config file')
             self.data = dict()
 
     def get_maps(self, model_id):
