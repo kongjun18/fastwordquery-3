@@ -16,12 +16,19 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
-
+import logging
+import os
 import ssl
 import sys
 
 from anki.hooks import addHook
 from anki.utils import is_mac
+
+addon_dir = os.path.dirname(__file__)
+log_file = os.path.join(addon_dir, 'fastwordquery-3.log')
+logging.basicConfig(filename=log_file, level=logging.DEBUG,
+                    format='%(asctime)s %(name)s %(funcName)s %(levelname)s %(message)s')
+logging.info(f'Logger is configured: file={log_file}')
 
 sys.dont_write_bytecode = True
 if is_mac:

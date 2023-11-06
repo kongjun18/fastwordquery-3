@@ -10,6 +10,12 @@ Upgrade "Fast Word Query 2"  Anki add-on to Anki 23.10.
 
 ---
 
+## Logs
+
+Main menu -> `Tools` -> `Add-ons` -> `Fast Word Query 3` -> `View Files` -> `fastwordquery-3.log`. 
+
+---
+
 ## All versions
 
 1. "Fast Word
