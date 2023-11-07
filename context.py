@@ -33,9 +33,7 @@ APP_ICON = get_icon('wqicon.png')  # Addon Icon
 
 
 class Config(object):
-    """
-    Addon Config
-    """
+    """Addon Config"""
     _CONFIG_FILENAME = 'fastwqcfg.json'  # Config File Path
 
     def __init__(self, window):
@@ -51,12 +49,9 @@ class Config(object):
         return self.window.pm.name
 
     def update(self, data):
-        """
-        Update && Save
-        """
+        """Update && Save"""
         data['version'] = VERSION
-        data['%s_last' % self.pmname] = data.get('last_model',
-                                                 self.last_model_id)
+        data['%s_last' % self.pmname] = data.get('last_model', self.last_model_id)
         self.data.update(data)
         full_path: str = os.path.join(os.getcwd(), self.path)
         self.log.debug(f"Update file: {full_path}")
@@ -67,9 +62,7 @@ class Config(object):
         runHook('config.update')
 
     def read(self):
-        """
-        Load from config file
-        """
+        """Load from config file"""
         if self.data:
             return self.data
         try:
@@ -86,9 +79,7 @@ class Config(object):
             self.data = dict()
 
     def get_maps(self, model_id):
-        """
-        Query fileds map
-        """
+        """Query fields map"""
         return self.data.get(str(model_id), list())
 
     @property
@@ -121,26 +112,22 @@ class Config(object):
 
     @property
     def thread_number(self):
-        """
-        Query Thread Number
-        """
+        """Query Thread Number"""
         return self.data.get('thread_number', 16)
 
     @property
     def last_folder(self):
-        """
-        last file dialog open path
-        """
+        """last file dialog open path"""
         return self.data.get('last_folder', '')
 
     @property
     def ignore_accents(self):
-        '''ignore accents of field in querying'''
+        """ignore accents of field in querying"""
         return self.data.get('ignore_accents', False)
 
     @property
     def cloze_str(self):
-        '''cloze formater string'''
+        """Cloze formatter string"""
         tmpstr = self.data.get('cloze_str', '{{c1::%s}}')
         if len(tmpstr.split('%s')) != 2:
             tmpstr = '{{c1::%s}}'
@@ -148,7 +135,7 @@ class Config(object):
 
     @property
     def sound_str(self):
-        '''sound formater string'''
+        """Sound formatter string"""
         # 设置音频播放按钮大小
         # <span style="width:24px;height:24px;">[sound:{0}]</span>
         tmpstr = self.data.get('sound_str', u'[sound:{0}]')
