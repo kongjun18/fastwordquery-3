@@ -12,7 +12,7 @@ Upgrade "Fast Word Query 2"  Anki add-on to Anki 23.10.
 
 ## Logs
 
-Main menu -> `Tools` -> `Add-ons` -> `Fast Word Query 3` -> `View Files` -> `fastwordquery-3.log`. 
+Main menu -> `Tools` -> `Add-ons` -> `Fast Word Query 3` -> `View Files` -> `fastwordquery-3.log`.
 
 ---
 
@@ -69,3 +69,8 @@ Main menu -> `Tools` -> `Add-ons` -> `Fast Word Query 3` -> `View Files` -> `fas
 1. Open "Browser" window
 2. Select note for testing
 3. RMB click in field -> "Query"
+
+### 5. Config file
+
+1. Start with absent config file
+2. Start with existing config file

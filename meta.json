@@ -1,8 +1,10 @@
 {
   "name": "Fast Word Query Multi-threaded queries 3 for words from local or web dictionaries",
-  "mod": 1699287414,
+  "mod": 1699368310,
   "min_point_version": 2310,
   "max_point_version": 0,
   "branch_index": 0,
-  "disabled": false
+  "disabled": false,
+  "conflicts": [],
+  "update_enabled": true
 }

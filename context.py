@@ -20,6 +20,7 @@
 import json
 import logging
 import os
+from pathlib import Path
 
 from anki.hooks import runHook
 from aqt import mw
@@ -34,14 +35,19 @@ APP_ICON = get_icon('wqicon.png')  # Addon Icon
 
 class Config(object):
     """Addon Config"""
-    _CONFIG_FILENAME = 'fastwqcfg.json'  # Config File Path
 
     def __init__(self, window):
         self.log = logging.getLogger(__class__.__name__)
-        self.path = u'_' + self._CONFIG_FILENAME
         self.window = window
         self.version = '0'
         self.data = None
+        user_home_dir: Path = Path.home()
+        config_file_name = 'fastwqcfg.json'
+        self.path: Path = user_home_dir.joinpath(u'_' + config_file_name)
+        self.path_legacy: Path = user_home_dir.joinpath(u'.' + config_file_name)
+        self.log.info(f"User home dir: {user_home_dir}")
+        self.log.info(f"Config path: {self.path}")
+        self.log.info(f"Config path (legacy): {self.path_legacy}")
         self.read()
 
     @property
@@ -53,10 +59,9 @@ class Config(object):
         data['version'] = VERSION
         data['%s_last' % self.pmname] = data.get('last_model', self.last_model_id)
         self.data.update(data)
-        full_path: str = os.path.join(os.getcwd(), self.path)
-        self.log.debug(f"Update file: {full_path}")
+        self.log.debug(f"Update file: {self.path}")
         self.log.debug(f"Update data: {self.data}")
-        with open(full_path, 'w', encoding='utf-8') as f:
+        with open(self.path, 'w', encoding='utf-8') as f:
             json.dump(self.data, f, indent=4, sort_keys=True, ensure_ascii=False)
             f.close()
         runHook('config.update')
@@ -66,17 +71,20 @@ class Config(object):
         if self.data:
             return self.data
         try:
-            path = self.path if os.path.exists(self.path) else u'.' + self._CONFIG_FILENAME
-            full_path: str = os.path.join(os.getcwd(), path)
-            self.log.debug(f"Reading file: {full_path}")
-            with open(full_path, 'r', encoding="utf-8") as f:
-                self.data = json.load(f)
-                f.close()
+            path = self.path if os.path.exists(self.path) else self.path_legacy
+            if os.path.exists(path):
+                self.log.debug(f"Reading file: {path}")
+                with open(path, 'r', encoding="utf-8") as f:
+                    self.data = json.load(f)
+                    f.close()
+            else:
+                self.data = dict()
             if not os.path.exists(self.path):
                 self.update(self.data)
-        except Exception:
+        except IOError:
             self.log.exception('can not find config file')
             self.data = dict()
+        self.log.debug(f"Config file was read: {self.data}")
 
     def get_maps(self, model_id):
         """Query fields map"""
