@@ -25,10 +25,22 @@ from anki.hooks import addHook
 from anki.utils import is_mac
 
 addon_dir = os.path.dirname(__file__)
+
+# Configure logger
 log_file = os.path.join(addon_dir, 'fastwordquery-3.log')
 logging.basicConfig(filename=log_file, level=logging.DEBUG,
                     format='%(asctime)s %(name)s %(funcName)s %(levelname)s %(message)s')
 logging.info(f'Logger is configured: file={log_file}')
+
+# Log content of meta.json
+meta_json_file = os.path.join(addon_dir, 'meta.json')
+try:
+    with open(meta_json_file, 'r', encoding="utf-8") as f:
+        content = f.read()
+        f.close()
+    logging.info(f"Content of {meta_json_file}: {content}")
+except IOError:
+    logging.exception(f"Can not read {meta_json_file}")
 
 sys.dont_write_bytecode = True
 if is_mac:
