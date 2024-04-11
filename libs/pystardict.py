@@ -15,9 +15,9 @@ class _StarDictIfo(object):
     version=2.4.2
     [options]
 
-    Note that the current "version" string must be "2.4.2" or "3.0.0".  If it's not,
+    Note that the current "version" string must be "2.4.2" or "3.6".  If it's not,
     then StarDict will refuse to read the file.
-    If version is "3.0.0", StarDict will parse the "idxoffsetbits" option.
+    If version is "3.6", StarDict will parse the "idxoffsetbits" option.
 
     [options]
     ---------
@@ -36,7 +36,7 @@ class _StarDictIfo(object):
     wordcount=     // required
     synwordcount=  // required if ".syn" file exists.
     idxfilesize=   // required
-    idxoffsetbits= // New in 3.0.0
+    idxoffsetbits= // New in 3.6
     author=
     email=
     website=
@@ -78,7 +78,7 @@ class _StarDictIfo(object):
             raise Exception('ifo has no wordcount')
         self.wordcount = int(self.wordcount)
 
-        if self.version == '3.0.0':
+        if self.version == '3.6':
             try:
                 #_syn = open('%s.syn' % dict_prefix)    # not used
                 self.synwordcount = _config.get('synwordcount', None)
