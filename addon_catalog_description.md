@@ -1,4 +1,4 @@
-Upgrade "Fast Word Query 2"  Anki add-on to Anki 23.10.
+Upgrade "Fast Word Query 2"  Anki add-on to Anki 24.04.
 
 ---
 

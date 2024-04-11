@@ -20,7 +20,7 @@
 import os
 import sys
 
-from aqt.forms.editaddon import Ui_Dialog
+from aqt.forms.editcurrent import Ui_Dialog
 from aqt.qt import *
 
 from ..context import config

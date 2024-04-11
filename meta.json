@@ -1,7 +1,7 @@
 {
   "name": "Fast Word Query 3: retrieve words from dictionaries",
   "mod": 1699368310,
-  "min_point_version": 2310,
+  "min_point_version": 2404,
   "max_point_version": 0,
   "branch_index": 0,
   "disabled": false,
