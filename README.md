@@ -29,7 +29,7 @@ Main menu -> `Tools` -> `Add-ons` -> `Fast Word Query 3` -> `View Files` -> `fas
 
 ## Build ZIP
 
-1. Run `gradlew`
+1. Run `./gradlew`
 2. Output is `build/fastwordquery-3.zip`
 
 ---

@@ -1,13 +1,13 @@
 defaultTasks('distributive')
 
-task clean(type: Delete) {
-    delete("$buildDir")
+tasks.register('clean', Delete) {
+    delete layout.buildDirectory
 }
 
-task distributive(type: Zip) {
+tasks.register('distributive', Zip) {
     dependsOn 'clean'
     from "$projectDir"
     exclude '__pycache__', 'build', '.idea', '.gradle', 'gradle', '.gitignore', 'gradlew', 'gradlew.bat', 'build.gradle', '*.log'
-    destinationDirectory = file("$buildDir")
+    destinationDirectory = layout.buildDirectory
     archiveFileName = "fastwordquery-3.zip"
 }
