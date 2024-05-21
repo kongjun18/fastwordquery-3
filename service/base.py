@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+from dataclasses import dataclass
 import inspect
 import os
 import random
@@ -63,18 +64,29 @@ except ImportError:
 
 
 __all__ = [
-    'register', 'export', 'copy_static_file', 'with_styles', 'parse_html', 'service_wrap', 'get_hex_name', 
+    'register', 'export', 'copy_static_file', 'with_styles', 'parse_html', 'service_wrap', 'get_hex_name',
     'Service', 'WebService', 'LocalService', 'MdxService', 'StardictService', 'QueryResult'
 ]
 
 _default_ua = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 ' \
-             '(KHTML, like Gecko) Chrome/70.0.3538.67 Safari/537.36'
+    '(KHTML, like Gecko) Chrome/70.0.3538.67 Safari/537.36'
+
+
+@dataclass
+class Item:
+    definition: str
+    synonyms: list[str]
+
+    def __str__(self):
+        synonyms_str = "，".join(self.synonyms)
+        return "{}（{}）".format(self.definition, synonyms_str) if synonyms_str else self.definition
 
 
 def get_hex_name(prefix, val, suffix):
     ''' get sha1 hax name '''
     hex_digest = sha1(val.encode('utf-8')).hexdigest().lower()
-    name = '.'.join(['-'.join([prefix, hex_digest[:8], hex_digest[8:16], hex_digest[16:24], hex_digest[24:32], hex_digest[32:], ]), suffix, ])
+    name = '.'.join(['-'.join([prefix, hex_digest[:8], hex_digest[8:16],
+                    hex_digest[16:24], hex_digest[24:32], hex_digest[32:], ]), suffix, ])
     return name
 
 
@@ -88,7 +100,7 @@ def register(labels):
     """
     def _deco(cls):
         cls.__register_label__ = _cl(labels)
-        
+
         methods = inspect.getmembers(cls, predicate=_is_method_or_func)
         exports = []
         for method in methods:
@@ -148,11 +160,11 @@ def with_styles(**styles):
         def _deco(cls, *args, **kwargs):
             res = fld_func(cls, *args, **kwargs)
             cssfile, css, jsfile, js, need_wrap_css, class_wrapper =\
-                styles.get('cssfile', None),\
-                styles.get('css', None),\
-                styles.get('jsfile', None),\
-                styles.get('js', None),\
-                styles.get('need_wrap_css', False),\
+                styles.get('cssfile', None), \
+                styles.get('css', None), \
+                styles.get('jsfile', None), \
+                styles.get('js', None), \
+                styles.get('need_wrap_css', False), \
                 styles.get('wrap_class', '')
 
             def wrap(html, css_obj, is_file=True):
@@ -185,7 +197,8 @@ def with_styles(**styles):
     return _with
 
 
-_BS_LOCKS = [_threading.Lock(), _threading.Lock()]  # bs4 threading lock, overload protection
+# bs4 threading lock, overload protection
+_BS_LOCKS = [_threading.Lock(), _threading.Lock()]
 
 
 def parse_html(html):
@@ -250,7 +263,7 @@ class Service(object):
     @property
     def word(self):
         return self._word
-    
+
     @word.setter
     def word(self, value):
         value = re.sub(r'</?\w+[^>]*>', '', value)
@@ -259,11 +272,11 @@ class Service(object):
     @property
     def quote_word(self):
         return urllib2.quote(self.word)
-    
+
     @property
     def support(self):
         return True
-        
+
     @property
     def fields(self):
         return self._fields
@@ -415,7 +428,7 @@ class WebService(Service):
             headers = {'User-Agent': _default_ua}
             if custom_headers:
                 headers.update(custom_headers)
-            
+
             response = urllib2.urlopen(
                 urllib2.Request(
                     url=('?'.join([url, params]) if params and method == 'GET'
@@ -484,6 +497,7 @@ class WebService(Service):
 
 class _DictBuildWorker(QThread):
     """Local Dictionary Builder"""
+
     def __init__(self, func):
         super(_DictBuildWorker, self).__init__()
         self._builder = None
@@ -519,7 +533,7 @@ class LocalService(Service):
     def _get_builer(key, func=None):
         LocalService._mutex_builder.lock()
         key = md5(str(key).encode('utf-8')).hexdigest()
-        if not(func is None):
+        if not (func is None):
             if not LocalService._mdx_builders[key]:
                 worker = _DictBuildWorker(func)
                 worker.start()
@@ -560,8 +574,10 @@ class MdxService(LocalService):
         self.query_interval = 0.01
         self.word_links = []
         self.styles = []
+        print("MDX service started.")
         if MdxService.check(self.dict_path):
-            self.builder = self._get_builer(dict_path, service_wrap(MdxBuilder, dict_path))
+            self.builder = self._get_builer(
+                dict_path, service_wrap(MdxBuilder, dict_path))
 
     @staticmethod
     def check(dict_path):
@@ -582,12 +598,54 @@ class MdxService(LocalService):
     def fld_whole(self):
         html = self.get_default_html()
         js = re.findall(r'<script .*?>(.*?)</script>', html, re.DOTALL)
-        jsfile = re.findall(r'<script .*?src=[\'\"](.+?)[\'\"]', html, re.DOTALL)
+        jsfile = re.findall(
+            r'<script .*?src=[\'\"](.+?)[\'\"]', html, re.DOTALL)
         return QueryResult(result=html, js=u'\n'.join(js), jsfile=jsfile)
+
+    @export([u'美式音标', u'Phonetic Symbols (US)'])
+    def fld_phonetic(self):
+        self.get_default_html()
+        return self._get_field('phonetic')
+
+    @export([u'释义', u'Definition'])
+    def fld_definition(self):
+        self.get_default_html()
+        return self._get_field('definition')
+
+    @export([u'美式发音', u'Americian Sound'])
+    def fld_sound(self):
+        try:
+            self.get_default_html()
+            sound = self._get_field('sound')
+            savepath = os.path.join(
+                "/home/kongjun/.local/share/Anki2/账户 1/collection.media/", sound)
+            print(savepath)
+            bytes_list = self.builder.mdd_lookup(
+                "\\{}".format(sound), ignorecase=True)
+            if bytes_list:
+                if not os.path.exists(savepath):
+                    with open(savepath, 'wb') as f:
+                        f.write(bytes_list[0])
+                return "[sound:{}]".format(sound)
+        except sqlite3.OperationalError as e:
+            print(e)
+            pass
+        return ""
+
+    @export([u'中文例句', u'Chinese Example'])
+    def fld_example_zh(self):
+        self.get_default_html()
+        return self._get_field('example_zh')
+
+    @export([u'英文例句', u'English Example'])
+    def fld_example_en(self):
+        self.get_default_html()
+        return self._get_field('example_en')
 
     def _get_definition_mdx(self):
         """according to the word return mdx dictionary page"""
-        ignorecase = config.ignore_mdx_wordcase and (self.word != self.word.lower() or self.word != self.word.upper())
+        ignorecase = config.ignore_mdx_wordcase and (
+            self.word != self.word.lower() or self.word != self.word.upper())
         content = self.builder.mdx_lookup(self.word, ignorecase=ignorecase)
         str_content = ""
         if len(content) > 0:
@@ -599,7 +657,8 @@ class MdxService(LocalService):
     def _get_definition_mdd(self, word):
         """according to the keyword(param word) return the media file contents"""
         word = word.replace('/', '\\')
-        ignorecase = config.ignore_mdx_wordcase and (word != word.lower() or word != word.upper())
+        ignorecase = config.ignore_mdx_wordcase and (
+            word != word.lower() or word != word.upper())
         content = self.builder.mdd_lookup(word, ignorecase=ignorecase)
         if len(content) > 0:
             return [content[0]]
@@ -648,8 +707,71 @@ class MdxService(LocalService):
                     self.word_links.append(word.upper())
                     self.word = word
                     return self._get_default_html()
-            html = self.adapt_to_anki(result)
-        self.cache[self.word] = html
+            # TODO(kj): save audio
+            #  html = self.adapt_to_anki(result)
+
+        example_en = []
+        example_zh = []
+        soup = parse_html(result)
+        for ul in soup.css.select("ul"):
+            if "examples" in ul.get_attribute_list("class"):
+                for child in ul.children:
+                    examples = [c.get_text()
+                                for c in child.children if c.get_text() != ""]
+                    examples = examples[len(examples)-2:]
+                    example_en.append(examples[0])
+                    example_zh.append(examples[1])
+                    break
+        print(example_en)
+        print(example_zh)
+
+        phon_node = soup.css.select(".phons_n_am")[0]
+        attrs = phon_node.find("a").get_attribute_list("href")
+        assert len(attrs) == 1
+        sound = attrs[0]
+        phon = phon_node.get_text()
+        print(phon, sound)
+
+        items = dict()
+        entrys = soup.css.select("#entryContent")
+        for entry in entrys:
+            pos = entry.find("span", {"class": "pos"}).get_text()
+            if pos not in items:
+                items[pos] = []
+            for deft in entry.find_all("deft"):
+                # Definition
+                definition = deft.find("chn").get_text().split("；")[0]
+                span = deft.find_next_sibling("span")
+                # Synonyms
+                synonyms = []
+                if span:
+                    for s in span.find_all("span"):
+                        if "xh" in s.get_attribute_list("class"):
+                            synonyms.append(s.get_text())
+                item = Item(definition, synonyms)
+                items[pos].append(item)
+                print(item)
+
+        # Definition
+        pos2str = {
+            "noun": "n.",
+            "verb": "v.",
+            "adjective": "adj."
+        }
+        builder = []
+        for pos, itemList in items.items():
+            builder.append("{} {}".format(
+                pos2str.get(pos, pos), "；".join([str(item) for item in itemList])))
+        definition = " ".join(builder)
+        print(definition)
+
+        self.cache[self.word] = {
+            "phonetic": phon,
+            "sound": sound.split("/")[-1],
+            "definition": definition,
+            "example_en": "<br>".join(example_en),
+            "example_zh": "<br>".join(example_zh),
+        }
         return self.cache[self.word]
 
     def adapt_to_anki(self, html):
@@ -676,7 +798,8 @@ class MdxService(LocalService):
         html = p.sub(u"[\\1]\\2", html)
         self.save_media_files(media_files_set)
         for f in mcss:
-            cssfile = u'_{}'.format(os.path.basename(f.replace('\\', os.path.sep)))
+            cssfile = u'_{}'.format(
+                os.path.basename(f.replace('\\', os.path.sep)))
             # if not exists the css file, the user can place the file to media
             # folder first, and it will also execute the wrap process to generate
             # the desired file.
@@ -684,7 +807,7 @@ class MdxService(LocalService):
                 css_src = self.dict_path.replace(self._filename + u'.mdx', f)
                 if os.path.exists(css_src):
                     shutil.copy(css_src, cssfile)
-                else:    
+                else:
                     self.missed_css.add(cssfile[1:])
             new_css_file, wrap_class_name = wrap_css(cssfile)
             html = html.replace(cssfile, new_css_file)
@@ -709,8 +832,10 @@ class MdxService(LocalService):
                 shutil.copy(src_fn, savepath)
                 return savepath
             else:
-                ignorecase = config.ignore_mdx_wordcase and (filepath_in_mdx != filepath_in_mdx.lower() or filepath_in_mdx != filepath_in_mdx.upper())
-                bytes_list = self.builder.mdd_lookup(filepath_in_mdx, ignorecase=ignorecase)
+                ignorecase = config.ignore_mdx_wordcase and (
+                    filepath_in_mdx != filepath_in_mdx.lower() or filepath_in_mdx != filepath_in_mdx.upper())
+                bytes_list = self.builder.mdd_lookup(
+                    filepath_in_mdx, ignorecase=ignorecase)
                 if bytes_list:
                     with open(savepath, 'wb') as f:
                         f.write(bytes_list[0])
@@ -749,6 +874,7 @@ class StardictService(LocalService):
     '''
     Stardict Local Dictionary Service
     '''
+
     def __init__(self, dict_path):
         super(StardictService, self).__init__(dict_path)
         self.query_interval = 0.05
