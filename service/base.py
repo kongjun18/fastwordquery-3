@@ -624,21 +624,22 @@ class MdxService(LocalService):
     @export([u'美式发音', u'Americian Sound'])
     def fld_sound(self):
         try:
+            self.get_default_html()
+            sound = self._get_field('sound')
             from ..context import config
             save_path = ""
             if self.platform == "Android":
-                save_path = "/storage/emulated/0/Android/data/com.ichi2.anki/files/AnkiDroid/collection.media"
+                save_path = "/storage/emulated/0/Android/data/com.ichi2.anki/files/AnkiDroid/collection.media/{}".format(
+                    sound)
             elif self.platform == "Windows":
                 save_path = os.path.join(
-                    "%APPDATA%", "Anki2", "collection.media")
+                    "%APPDATA%", "Anki2", "collection.media", sound)
             elif self.platform == "Darwin":
                 save_path = os.path.join(
-                    Path.home(), "Library", "Application Support", "Anki2", "collection.media")
+                    Path.home(), "Library", "Application Support", "Anki2", config.pmname, "collection.media", sound)
             elif self.platform == "Linux":
                 save_path = os.path.join(
                     Path.home(), ".local", "share", "Anki2", config.pmname, "collection.media", sound)
-            self.get_default_html()
-            sound = self._get_field('sound')
             bytes_list = self.builder.mdd_lookup(
                 "\\{}".format(sound), ignorecase=True)
             if bytes_list:
@@ -774,6 +775,7 @@ class MdxService(LocalService):
                 print(item)
 
         # Definition
+        # TODO(kj): 增加更多的对应关系
         pos2str = {
             "noun": "n.",
             "verb": "v.",
