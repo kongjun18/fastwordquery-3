@@ -626,18 +626,17 @@ class MdxService(LocalService):
         try:
             from .context import config
             save_path = ""
-            match self.platform:
-                case "Android":
-                    save_path = "/storage/emulated/0/Android/data/com.ichi2.anki/files/AnkiDroid/collection.media"
-                case "Windows":
-                    save_path = os.path.join(
-                        "%APPDATA%", "Anki2", "collection.media")
-                case "Darwin":
-                    save_path = os.path.join(
-                        Path.home(), "Library", "Application Support", "Anki2", "collection.media")
-                case "Linux":
-                    save_path = os.path.join(
-                        Path.home(), ".local", "share", "Anki2", config.pmname, "collection.media", sound)
+            if self.platform == "Android":
+                save_path = "/storage/emulated/0/Android/data/com.ichi2.anki/files/AnkiDroid/collection.media"
+            elif self.platform == "Windows":
+                save_path = os.path.join(
+                    "%APPDATA%", "Anki2", "collection.media")
+            elif self.platform == "Darwin":
+                save_path = os.path.join(
+                    Path.home(), "Library", "Application Support", "Anki2", "collection.media")
+            elif self.platform == "Linux":
+                save_path = os.path.join(
+                    Path.home(), ".local", "share", "Anki2", config.pmname, "collection.media", sound)
             self.get_default_html()
             sound = self._get_field('sound')
             bytes_list = self.builder.mdd_lookup(
