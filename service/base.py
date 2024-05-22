@@ -18,6 +18,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 from dataclasses import dataclass
+from pathlib import Path
 import inspect
 import os
 import random
@@ -574,6 +575,14 @@ class MdxService(LocalService):
         self.query_interval = 0.01
         self.word_links = []
         self.styles = []
+        self.platform = ""
+        from os import environ
+        if 'ANDROID_ARGUMENT' in environ:
+            self.platform = 'Android'
+        else:
+            import platform
+            # Linux/Darwin/Windows
+            self.platform = platform.system()
         print("MDX service started.")
         if MdxService.check(self.dict_path):
             self.builder = self._get_builer(
@@ -615,21 +624,34 @@ class MdxService(LocalService):
     @export([u'美式发音', u'Americian Sound'])
     def fld_sound(self):
         try:
+            from .context import config
+            save_path = ""
+            match self.platform:
+                case "Android":
+                    save_path = "/storage/emulated/0/Android/data/com.ichi2.anki/files/AnkiDroid/collection.media"
+                case "Windows":
+                    save_path = os.path.join(
+                        "%APPDATA%", "Anki2", "collection.media")
+                case "Darwin":
+                    save_path = os.path.join(
+                        Path.home(), "Library", "Application Support", "Anki2", "collection.media")
+                case "Linux":
+                    save_path = os.path.join(
+                        Path.home(), ".local", "share", "Anki2", config.pmname, "collection.media", sound)
             self.get_default_html()
             sound = self._get_field('sound')
-            savepath = os.path.join(
-                "/home/kongjun/.local/share/Anki2/账户 1/collection.media/", sound)
-            print(savepath)
             bytes_list = self.builder.mdd_lookup(
                 "\\{}".format(sound), ignorecase=True)
             if bytes_list:
-                if not os.path.exists(savepath):
-                    with open(savepath, 'wb') as f:
+                if not os.path.exists(save_path):
+                    with open(save_path, 'wb') as f:
                         f.write(bytes_list[0])
                 return "[sound:{}]".format(sound)
         except sqlite3.OperationalError as e:
             print(e)
-            pass
+        except Exception as e:
+            print(e)
+
         return ""
 
     @export([u'中文例句', u'Chinese Example'])
