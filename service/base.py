@@ -624,7 +624,7 @@ class MdxService(LocalService):
     @export([u'美式发音', u'Americian Sound'])
     def fld_sound(self):
         try:
-            from .context import config
+            from ..context import config
             save_path = ""
             if self.platform == "Android":
                 save_path = "/storage/emulated/0/Android/data/com.ichi2.anki/files/AnkiDroid/collection.media"
