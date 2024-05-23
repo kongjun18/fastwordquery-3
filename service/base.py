@@ -729,21 +729,18 @@ class MdxService(LocalService):
                     self.word_links.append(word.upper())
                     self.word = word
                     return self._get_default_html()
-            # TODO(kj): save audio
-            #  html = self.adapt_to_anki(result)
+        soup = parse_html(result)
 
         example_en = []
         example_zh = []
-        soup = parse_html(result)
-        for ul in soup.css.select("ul"):
-            if "examples" in ul.get_attribute_list("class"):
-                for child in ul.children:
-                    examples = [c.get_text()
-                                for c in child.children if c.get_text() != ""]
-                    examples = examples[len(examples)-2:]
-                    example_en.append(examples[0])
-                    example_zh.append(examples[1])
-                    break
+        # Ignore extra examples
+        for ul in soup.css.select("li.sense > ul.examples"):
+            for child in ul.children:
+                examples = [c.get_text()
+                            for c in child.children if c.get_text() != ""]
+                example_en.append(examples[0])
+                example_zh.append(examples[1])
+                break
         print(example_en)
         print(example_zh)
 
