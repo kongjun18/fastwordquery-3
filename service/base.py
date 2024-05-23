@@ -735,11 +735,13 @@ class MdxService(LocalService):
         example_zh = []
         # Ignore extra examples
         for ul in soup.css.select("li.sense > ul.examples"):
-            for child in ul.children:
-                examples = [c.get_text()
-                            for c in child.children if c.get_text() != ""]
-                example_en.append(examples[0])
-                example_zh.append(examples[1])
+            for li in ul.children:
+                print(li)
+                # English example: span.class
+                span = li.find("span")
+                if "x" in span.get_attribute_list("class"):
+                    example_en.append(span.get_text())
+                example_zh.append(li.find("chn").get_text())
                 break
         print(example_en)
         print(example_zh)
