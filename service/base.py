@@ -748,12 +748,14 @@ class MdxService(LocalService):
         print(example_en)
         print(example_zh)
 
-        phon_node = soup.css.select(".phons_n_am")[0]
-        attrs = phon_node.find("a").get_attribute_list("href")
-        assert len(attrs) == 1
-        sound = attrs[0]
-        phon = phon_node.get_text()
-        print(phon, sound)
+        phon, sound = "", ""
+        if len(self.word.split()) == 1:
+            phon_node = soup.css.select(".phons_n_am")[0]
+            attrs = phon_node.find("a").get_attribute_list("href")
+            assert len(attrs) == 1
+            sound = attrs[0]
+            phon = phon_node.get_text()
+            print(phon, sound)
 
         items = dict()
         entrys = soup.css.select("#entryContent")
