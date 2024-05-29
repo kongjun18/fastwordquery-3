@@ -738,9 +738,11 @@ class MdxService(LocalService):
             for li in ul.children:
                 print(li)
                 # English example: span.class
-                span = li.find("span")
-                if "x" in span.get_attribute_list("class"):
-                    example_en.append(span.get_text())
+                spans = li.find_all("span")
+                for span in spans:
+                    if "x" in span.get_attribute_list("class"):
+                        example_en.append(span.get_text())
+                        break
                 example_zh.append(li.find("chn").get_text())
                 break
         print(example_en)
