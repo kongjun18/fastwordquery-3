@@ -46,6 +46,13 @@ sys.dont_write_bytecode = True
 if is_mac:
     ssl._create_default_https_context = ssl._create_unverified_context
 
+addon_dir = os.path.dirname(__file__)
+
+# 将依赖目录添加到 sys.path
+lib_path = os.path.join(addon_dir, "libs")
+if lib_path not in sys.path:
+    sys.path.append(lib_path)
+
 ############## other config here ##################
 shortcut = ('Ctrl+Alt' if is_mac else 'Ctrl') + '+Q'
 

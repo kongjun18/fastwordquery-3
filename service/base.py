@@ -72,6 +72,24 @@ __all__ = [
 _default_ua = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 ' \
     '(KHTML, like Gecko) Chrome/70.0.3538.67 Safari/537.36'
 
+import asyncio
+import edge_tts
+import os
+
+async def generate_pronunciation(text: str, voice: str, output_file: str) -> None:
+    tts = edge_tts.Communicate(text, voice)
+    await tts.save(output_file)
+
+def download_pronunciation(word: str, output_path: str) -> None:
+    asyncio.run(generate_pronunciation(word, "en-US-AriaNeural", output_path))
+
+def query_word_and_download_pronunciation(word, path):
+    download_pronunciation(word, path)
+
+def sound_path(word):
+    lower_word = word.lower()
+    result = lower_word.replace(" ", "_")
+    return result+".mp3"
 
 @dataclass
 class Item:
@@ -626,6 +644,11 @@ class MdxService(LocalService):
         try:
             self.get_default_html()
             sound = self._get_field('sound')
+            found = True
+            if not sound:
+                sound = sound_path(self.word)
+                found = False
+
             from ..context import config
             save_path = ""
             if self.platform == "Android":
@@ -640,12 +663,17 @@ class MdxService(LocalService):
             elif self.platform == "Linux":
                 save_path = os.path.join(
                     Path.home(), ".local", "share", "Anki2", config.pmname, "collection.media", sound)
-            bytes_list = self.builder.mdd_lookup(
-                "\\{}".format(sound), ignorecase=True)
-            if bytes_list:
-                if not os.path.exists(save_path):
-                    with open(save_path, 'wb') as f:
-                        f.write(bytes_list[0])
+
+            if found:
+                bytes_list = self.builder.mdd_lookup(
+                    "\\{}".format(sound), ignorecase=True)
+                if bytes_list:
+                    if not os.path.exists(save_path):
+                        with open(save_path, 'wb') as f:
+                            f.write(bytes_list[0])
+                    return "[sound:{}]".format(sound)
+            else:
+                query_word_and_download_pronunciation(self.word, save_path)
                 return "[sound:{}]".format(sound)
         except sqlite3.OperationalError as e:
             print(e)
